@@ -1,26 +1,56 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import React ,{Component} from 'react'
+import {robots} from './robots'
+import CardArray from './CardArray';
+import Searchbox from './Searchbox';
+import Scroll from './Scroll'
+import {connect} from 'react-redux';
+import {setSearchField} from './action'
 
-function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+
+function mapStateToProps(state){
+    return {
+        searchField: state.searchField
+    }
 }
 
-export default App;
+
+function mapDispatchToProps(dispatch){
+    return{
+        onSearchChange: function(event){
+            dispatch(setSearchField(event.target.value))
+        }
+    }
+}
+class App extends Component{
+    // constructor(){
+    //     super()
+    //     this.state = {
+    //         robots:[],
+    //     }
+    // }
+
+    // componentDidMount(){
+    //     fetch("https://jsonplaceholder.typicode.com/users") 
+    //     .then(response => response.json())
+    //     .then(users => {
+    //         this.setState({robots:users})
+    //     })
+    // }
+
+
+    render(){
+
+        const filtered = robots.filter(robot => robot.name.toLowerCase().includes(this.props.searchField.toLowerCase()))
+        return (!robots.length) ? <h1>Loading Robots....</h1>:
+        (
+        <div className='tc'>
+            <h1>RoboRoomies</h1>
+            <Searchbox s = {this.props.onSearchChange}/>
+            <Scroll>
+                <CardArray robots={filtered} />
+            </Scroll>
+        </div>
+        );
+    }
+}
+ export default connect(mapStateToProps, mapDispatchToProps)(App)
